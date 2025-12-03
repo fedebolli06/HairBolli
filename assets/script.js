@@ -1,3 +1,27 @@
+// Theme auto-sync: follow user's system preference
+(() => {
+  const root = document.documentElement;
+  const metaTheme = document.querySelector('meta[name="theme-color"]');
+  const LIGHT_BG = '#f7eff7';
+  const DARK_BG = '#27273e';
+  const applyTheme = (isDark) => {
+    root.setAttribute('data-theme', isDark ? 'dark' : 'light');
+    if (metaTheme) metaTheme.setAttribute('content', isDark ? DARK_BG : LIGHT_BG);
+  };
+  if (!window.matchMedia) {
+    applyTheme(false);
+    return;
+  }
+  const media = window.matchMedia('(prefers-color-scheme: dark)');
+  const handleChange = (event) => applyTheme(event.matches);
+  applyTheme(media.matches);
+  if (typeof media.addEventListener === 'function') {
+    media.addEventListener('change', handleChange);
+  } else if (typeof media.addListener === 'function') {
+    media.addListener(handleChange);
+  }
+})();
+
 document.addEventListener('DOMContentLoaded', () => {
   // Year in footer
   const yearEl = document.getElementById('year');
@@ -504,53 +528,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   };
   enableTilt();
-
-  // Theme toggle (light/dark) for testing
-  const root = document.documentElement;
-  const THEME_KEY = 'hb-theme';
-  const LIGHT_BG = '#f7eff7';
-  const DARK_BG = '#27273e';
-  const metaTheme = document.querySelector('meta[name="theme-color"]');
-
-  const setTheme = (mode) => {
-    const next = (mode === 'dark') ? 'dark' : 'light';
-    root.setAttribute('data-theme', next);
-    if (metaTheme) metaTheme.setAttribute('content', next === 'dark' ? DARK_BG : LIGHT_BG);
-    localStorage.setItem(THEME_KEY, next);
-    if (themeBtn) updateThemeBtn();
-  };
-
-  const getTheme = () => {
-    const saved = localStorage.getItem(THEME_KEY);
-    if (saved === 'light' || saved === 'dark') return saved;
-    const attr = root.getAttribute('data-theme');
-    return (attr === 'dark') ? 'dark' : 'light';
-  };
-
-  const menuEl = document.querySelector('.menu') || document.querySelector('.nav');
-  let themeBtn = null;
-  const updateThemeBtn = () => {
-    if (!themeBtn) return;
-    const current = getTheme();
-    themeBtn.setAttribute('aria-pressed', current === 'dark' ? 'true' : 'false');
-    themeBtn.textContent = current === 'dark' ? 'Tema: Scuro' : 'Tema: Chiaro';
-  };
-
-  if (menuEl) {
-    themeBtn = document.createElement('button');
-    themeBtn.type = 'button';
-    themeBtn.className = 'btn btn-ghost small theme-toggle';
-    themeBtn.setAttribute('aria-label', 'Cambia tema');
-    themeBtn.addEventListener('click', () => {
-      const current = getTheme();
-      setTheme(current === 'dark' ? 'light' : 'dark');
-      // Close mobile menu if open to avoid overlay trapping scroll
-      closeAnyMenu();
-    });
-    menuEl.appendChild(themeBtn);
-    // Apply saved theme and reflect on button
-    setTheme(getTheme());
-  }
 
   // Allow closing menu with Escape
   document.addEventListener('keydown', (e) => {
