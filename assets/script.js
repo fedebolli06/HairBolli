@@ -202,37 +202,11 @@ document.addEventListener('DOMContentLoaded', () => {
   };
   initReveal();
 
-  // Gallery vertical parallax
+  // Gallery vertical parallax (disabled: reliability issues on some hosts)
   const initGalleryParallax = () => {
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     const imgs = Array.from(document.querySelectorAll('.grid.gallery img, .gallery-grid img'));
     if (!imgs.length) return;
-    const inView = new Set();
-    let rafId = null;
-    const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
-    const update = () => {
-      rafId = null;
-      const vh = window.innerHeight || document.documentElement.clientHeight;
-      const center = vh / 2;
-      inView.forEach(img => {
-        const r = img.getBoundingClientRect();
-        const elC = r.top + r.height / 2;
-        const delta = elC - center; // px from center
-        const y = clamp(-12, -delta * 0.05, 12); // damped translate
-        img.style.setProperty('--parallaxY', y.toFixed(2) + 'px');
-      });
-    };
-    const schedule = () => { if (!rafId) rafId = requestAnimationFrame(update); };
-    const obs = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) inView.add(entry.target); else { inView.delete(entry.target); entry.target.style.removeProperty('--parallaxY'); }
-      });
-      schedule();
-    }, { rootMargin: '0px 0px 0px 0px', threshold: 0 });
-    imgs.forEach(img => obs.observe(img));
-    window.addEventListener('scroll', schedule, { passive: true });
-    window.addEventListener('resize', schedule);
-    schedule();
+    // Do nothing: keep gallery static for consistent rendering across hosts.
   };
   initGalleryParallax();
 

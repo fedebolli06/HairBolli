@@ -979,6 +979,9 @@ main > section.hero + section { border-top: 0 !important; }
   border: 3px solid color-mix(in srgb, var(--surface), var(--primary) 10%);
   border-radius: 0;
   box-shadow: none;
+  opacity: 1 !important;
+  visibility: visible !important;
+  background: color-mix(in srgb, var(--surface-2), #fff 25%);
   transition: transform .35s ease, filter .35s ease;
 }
 .gallery-grid img { transform: translateY(var(--parallaxY, 0px)); }
